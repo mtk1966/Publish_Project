@@ -1,0 +1,45 @@
+﻿@model ItemStrore.Web.Models.ItemViewModel
+
+<form class="form" asp-controller="İtemStore" asp-action="İtemAdd" method="post" autocomplete="off">
+    <div class="control">
+        <h1>Add a New İtem</h1>
+    </div>
+    <div class="control block-cube block-input">
+        <input asp-for="Name" type="text" placeholder="Name" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <div class="bg-top">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg-right">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg">
+            <div class="bg-inner"></div>
+        </div>
+    </div>
+    <div class="control block-cube block-input">
+        <textarea asp-for="Price" placeholder="Price"></textarea>
+        <span asp-validation-for="Price" class="text-danger"></span>
+        <div class="bg-top">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg-right">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg">
+            <div class="bg-inner"></div>
+        </div>
+    </div>
+    <button class="btn block-cube block-cube-hover" type="submit">
+        <div class="bg-top">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg-right">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="bg">
+            <div class="bg-inner"></div>
+        </div>
+        <div class="text">Submit</div>
+    </button>
+</form>

@@ -1,0 +1,149 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+:root {
+    --primary-color: #4a90e2; /* Modern Mavi */
+    --secondary-color: #d1d8e0; /* Yumuşak Gri */
+    --form-bg: #ffffff;
+    --text-dark: #333333;
+}
+
+body {
+    background-color: #f5f7fa; /* Sayfanın genel arka planı hafif gri */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form {
+    width: 350px;
+    padding: 40px;
+    margin: 50px auto;
+    background: var(--form-bg);
+    border-radius: 12px;
+    /* Beyaz arka planda formu belli eden yumuşak gölge */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+.control h1 {
+    color: var(--text-dark);
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 35px;
+    font-size: 24px;
+}
+
+/* Blok Küp Yapısı (Beyaz zemine uygun) */
+.block-cube {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.block-input input, .block-input textarea {
+    width: 100%;
+    padding: 15px;
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0; /* Kenarlık ekledik ki beyazda kaybolmasın */
+    outline: none;
+    color: var(--text-dark);
+    font-size: 15px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* Derinlik Efektleri */
+.bg-top, .bg-right {
+    position: absolute;
+    background: var(--secondary-color);
+    transition: all 0.3s ease;
+}
+
+.bg-top {
+    height: 8px;
+    bottom: 100%;
+    left: 4px;
+    right: -4px;
+    transform: skewX(-45deg);
+}
+
+.bg-right {
+    width: 8px;
+    top: 4px;
+    bottom: -4px;
+    left: 100%;
+    transform: skewY(-45deg);
+}
+
+/* Focus Durumu: Maviye dönen hatlar */
+.block-input:focus-within input,
+.block-input:focus-within textarea {
+    border-color: var(--primary-color);
+}
+
+.block-input:focus-within .bg-top,
+.block-input:focus-within .bg-right {
+    background: var(--primary-color);
+}
+
+/* Şık Buton Tasarımı */
+.btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: #333; /* Koyu buton beyaz zeminde çok şık durur */
+    cursor: pointer;
+    position: relative;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.2s;
+}
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .btn .text {
+        position: relative;
+        z-index: 5;
+    }
+
+    .btn:hover {
+        background: var(--primary-color);
+    }
+
+.text-danger {
+    font-size: 12px;
+    color: #eb3b5a;
+    margin-top: 5px;
+    display: block;
+}

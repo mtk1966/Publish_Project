@@ -1,0 +1,27 @@
+﻿@model List<ItemStrore.Web.Models.ItemViewModel>
+
+<div class="container mt-4">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center">
+            <p>Henüz bir ürün bulunamadı. Lütfen daha sonra tekrar kontrol edin.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-success fw-bold">@item.Price.ToString("C2")</p>
+                            @* .ToString("C2") fiyatı para birimi formatında gösterir *@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
