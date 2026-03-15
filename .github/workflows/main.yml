@@ -16,28 +16,37 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             # --- AYARLAR ---
-            PROJECT_DIR="/home" # .csproj dosyasının olduğu ana klasör
-            PROJECT_NAME="ItemStrore.Web"       # Projenin adı (dotnet run için)
+            PROJECT_DIR="/home/publish_project"
+            REPO_URL="https://github.com/mtk1966/Publish_Project.git"
+            PROJECT_NAME="ItemStrore.Web"
             PORT="5000"
-            # ---------------
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
-              echo "🚀 Kod çekiliyor ve uygulama başlatılıyor..."
+              echo "🚀 Başlatılıyor..."
               
-              # 1. Önce varsa eski süreci öldür (Proje adına göre)
-              # 2. Klasöre gir ve kodu çek
+              # 1. Klasör kontrolü ve Git Clone/Pull
+              if [ ! -d "$PROJECT_DIR/.git" ]; then
+                echo "📁 Depo bulunamadı, clone yapılıyor..."
+                rm -rf $PROJECT_DIR
+                git clone $REPO_URL $PROJECT_DIR
+              fi
+
               cd $PROJECT_DIR || exit 1
+              
+              # Eski süreci öldür
+              pkill -f $PROJECT_NAME || true
+              
+              # Güncel kodu çek
               git pull origin main
               
-              # 3. Doğrudan kaynak koddan ayağa kaldır
-              # setsid ve nohup kullanarak SSH kopsa da çalışmasını sağlıyoruz
+              # 2. Çalıştır
               setsid nohup dotnet run --project . --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
               sleep 5
-              echo "✅ Uygulama $PORT portunda doğrudan çalıştırıldı."
+              echo "✅ Uygulama $PORT portunda ayağa kalktı."
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
-              echo "🛑 Uygulama durduruluyor..."
+              echo "🛑 Durduruluyor..."
               pkill -f $PROJECT_NAME || true
-              echo "✅ Tüm süreçler sonlandırıldı."
+              echo "✅ Kapatıldı."
             fi
