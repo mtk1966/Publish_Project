@@ -1,0 +1,50 @@
+name: Direct .NET Control (Password)
+
+on:
+  repository_dispatch:
+    types: [publish_event, unpublish_event]
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH ile Sunucuya Bağlan (Şifre ile)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }} # Şifre kullanımı burası
+          script: |
+            # --- AYARLAR ---
+            PROJECT_DIR="/home/mehmet/my-api"  # Projenin sunucudaki yolu
+            DLL_NAME="MyApiProject.dll"         # Ana DLL adı
+            PORT="5000"                        # Çalışacağı port
+            # ---------------
+
+            if [ "${{ github.event.action }}" == "publish_event" ]; then
+              echo "🚀 Proje güncelleniyor ve başlatılıyor..."
+              
+              # 1. Eski süreci öldür
+              pkill -f $DLL_NAME || true
+              
+              # 2. Klasöre gir ve güncelle
+              cd $PROJECT_DIR
+              git pull origin main
+              
+              # 3. Derle (Publish)
+              dotnet publish -c Release -o ./publish
+              
+              # 4. Arka planda çalıştır
+              cd ./publish
+              nohup dotnet $DLL_NAME --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
+              
+              echo "✅ Proje $PORT portunda yayına alındı."
+
+            elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
+              echo "🛑 Proje durduruluyor..."
+              
+              # Süreci sonlandır
+              pkill -f $DLL_NAME
+              
+              echo "✅ Tüm süreçler kapatıldı."
+            fi
