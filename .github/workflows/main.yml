@@ -16,7 +16,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             # --- AYARLAR ---
-            PROJECT_DIR="/home/publish_project/İtemStrore.Web" # .csproj dosyasının olduğu ana klasör
+            PROJECT_DIR="/home" # .csproj dosyasının olduğu ana klasör
             PROJECT_NAME="ItemStrore.Web"       # Projenin adı (dotnet run için)
             PORT="5000"
             # ---------------
