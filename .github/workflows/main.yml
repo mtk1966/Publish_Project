@@ -16,8 +16,8 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             # --- AYARLAR ---
-            PROJECT_DIR="/home/publish_project"
-            REPO_URL="https://github.com/mtk1966/Publish_Project.git"
+            PROJECT_DIR="/home"
+            REPO_URL="https://github.com/mtk1966/Publish_Project"
             PROJECT_NAME="ItemStrore.Web"
             PORT="5000"
 
