@@ -1,4 +1,4 @@
-name: Direct .NET Control Final
+name: Direct .NET Run Control
 
 on:
   repository_dispatch:
@@ -8,42 +8,38 @@ jobs:
   manage:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH ve Komut Yönetimi
+      - name: SSH ile Sunucuya Bağlan ve Çalıştır
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # --- AYARLARIN (Sunucuna göre bir kez kontrol et) ---
-            PROJECT_DIR="/home/publish_project"
-            DLL_NAME="ItemStrore.Web.dll"
+            # --- AYARLAR ---
+            PROJECT_DIR="/home/publish_project/İtemStrore.Web" # .csproj dosyasının olduğu ana klasör
+            PROJECT_NAME="ItemStrore.Web"       # Projenin adı (dotnet run için)
             PORT="5000"
-            # --------------------------------------------------
+            # ---------------
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
-              echo "🚀 Güncelleme ve Başlatma Başladı..."
+              echo "🚀 Kod çekiliyor ve uygulama başlatılıyor..."
               
-              # 1. Eski süreci ismine göre öldür
-              pkill -f $DLL_NAME || true
+              # 1. Önce varsa eski süreci öldür (Proje adına göre)
+              pkill -f $PROJECT_NAME || true
               
-              # 2. Dizine git ve kodu güncelle
-              cd $PROJECT_DIR || { echo "Dizin bulunamadı!"; exit 1; }
+              # 2. Klasöre gir ve kodu çek
+              cd $PROJECT_DIR || exit 1
               git pull origin main
               
-              # 3. Yayın dosyalarını hazırla
-              dotnet publish -c Release -o ./publish
+              # 3. Doğrudan kaynak koddan ayağa kaldır
+              # setsid ve nohup kullanarak SSH kopsa da çalışmasını sağlıyoruz
+              setsid nohup dotnet run --project . --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
-              # 4. Arka planda ölümsüz olarak başlat (setsid ve nohup kombinasyonu)
-              cd ./publish
-              setsid nohup dotnet $DLL_NAME --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
-              
-              # Kısa bir süre bekle ve kontrol et
-              sleep 3
-              echo "✅ İşlem tamamlandı. Port: $PORT"
+              sleep 5
+              echo "✅ Uygulama $PORT portunda doğrudan çalıştırıldı."
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
-              echo "🛑 Durduruluyor..."
-              pkill -f $DLL_NAME || true
-              echo "✅ Proje kapatıldı."
+              echo "🛑 Uygulama durduruluyor..."
+              pkill -f $PROJECT_NAME || true
+              echo "✅ Tüm süreçler sonlandırıldı."
             fi
