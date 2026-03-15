@@ -16,8 +16,8 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }} # Şifre kullanımı burası
           script: |
             # --- AYARLAR ---
-            PROJECT_DIR="/home/mehmet/my-api"  # Projenin sunucudaki yolu
-            DLL_NAME="MyApiProject.dll"         # Ana DLL adı
+            PROJECT_DIR="/home/publish_project"  # Projenin sunucudaki yolu
+            DLL_NAME="ItemStrore.Web.dll"         # Ana DLL adı
             PORT="5000"                        # Çalışacağı port
             # ---------------
 
