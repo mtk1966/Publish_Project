@@ -39,8 +39,8 @@ jobs:
               setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
               # 5. LOGLARI GITHUB EKRANINA BASMAK İÇİN BEKLEME
-              echo "⏳ Uygulamanın ayağa kalkması bekleniyor (10 sn)..."
-              sleep 10
+              echo "⏳ Uygulamanın ayağa kalkması bekleniyor (60 sn)..."
+              sleep 60
               
               echo -e "\n--- [ UYGULAMA ÇIKTISI / LOGLAR ] ---"
               if [ -f "output.log" ]; then
