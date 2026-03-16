@@ -1,4 +1,4 @@
-name: Direct .NET Run Control
+name: ItemStrore Direct Run
 
 on:
   repository_dispatch:
@@ -15,38 +15,34 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # --- AYARLAR ---
-            PROJECT_DIR="/home"
-            REPO_URL="https://github.com/mtk1966/Publish_Project"
-            PROJECT_NAME="ItemStrore.Web"
+            # --- FOTOĞRAFLARA GÖRE AYARLANMIŞ YOLLAR ---
+            BASE_DIR="/home/publish_project" # Sunucudaki ana repo klasörü
+            WEB_PROJECT_DIR="$BASE_DIR/ItemStrore.Web" # .csproj dosyasının olduğu yer
+            PROJECT_NAME="ItemStrore.Web" # Pkill için kullanılacak isim
             PORT="5000"
+            # -----------------------------------------
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
-              echo "🚀 Başlatılıyor..."
+              echo "🚀 Uygulama güncelleniyor ve başlatılıyor..."
               
-              # 1. Klasör kontrolü ve Git Clone/Pull
-              if [ ! -d "$PROJECT_DIR/.git" ]; then
-                echo "📁 Depo bulunamadı, clone yapılıyor..."
-                rm -rf $PROJECT_DIR
-                git clone $REPO_URL $PROJECT_DIR
-              fi
-
-              cd $PROJECT_DIR || exit 1
-              
-              # Eski süreci öldür
+              # 1. Eski süreci öldür
               pkill -f $PROJECT_NAME || true
               
-              # Güncel kodu çek
+              # 2. Ana klasöre git ve kodu çek
+              cd $BASE_DIR || { echo "Dizin bulunamadı!"; exit 1; }
               git pull origin main
               
-              # 2. Çalıştır
-              setsid nohup dotnet run --project . --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
+              # 3. Proje klasörüne gir (csproj burada)
+              cd $WEB_PROJECT_DIR || { echo "Web projesi dizini bulunamadı!"; exit 1; }
+              
+              # 4. Doğrudan ayağa kaldır
+              setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
               sleep 5
-              echo "✅ Uygulama $PORT portunda ayağa kalktı."
+              echo "✅ $PROJECT_NAME başarıyla $PORT portunda başlatıldı."
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
-              echo "🛑 Durduruluyor..."
+              echo "🛑 Uygulama durduruluyor..."
               pkill -f $PROJECT_NAME || true
-              echo "✅ Kapatıldı."
+              echo "✅ Uygulama kapatıldı."
             fi
