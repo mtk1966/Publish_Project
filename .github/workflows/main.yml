@@ -16,7 +16,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             # --- AYARLAR ---
-            BASE_DIR="/home/Publish_Project" 
+            BASE_DIR="home/Publish_Project" 
             WEB_PROJECT_DIR="ItemStrore.Web"
             PORT="5000"
             # ---------------
