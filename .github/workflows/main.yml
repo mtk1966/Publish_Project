@@ -28,8 +28,8 @@ jobs:
               # 1. Eski süreci öldü
               
               # 2. Ana klasöre git ve kodu çek
-              cd $BASE_DIR || { echo "Dizin bulunamadı!"; exit 1; }
-              git pull origin main
+              cd home/Publish_Project || { echo "Dizin bulunamadı!"; exit 1; }
+              git pull origin master
               
               # 3. Proje klasörüne gir (csproj burada)
               cd $WEB_PROJECT_DIR || { echo "Web projesi dizini bulunamadı!"; exit 1; }
