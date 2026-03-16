@@ -1,4 +1,4 @@
-name: Port Based .NET Control
+name: Port Based .NET Control with Logs
 
 on:
   repository_dispatch:
@@ -8,40 +8,52 @@ jobs:
   manage:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH ile Port Yönetimi
+      - name: SSH ile Port Yönetimi ve Log İzleme
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # --- AYARLAR ---
+            # --- AYARLAR (Tam Yollar) ---
             BASE_DIR="home/Publish_Project" 
             WEB_PROJECT_DIR="ItemStrore.Web"
-            PORT="4642"
-            # ---------------
+            PORT="5000"
+            # ----------------------------
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
-              echo "🚀 Uygulama port kontrolü yapılarak başlatılıyor..."
-
-              # 2. Klasöre gir ve güncelle
-              cd $BASE_DIR || { echo "❌ Ana dizin bulunamadı!"; exit 1; }
-              git pull origin master 
+              echo "🚀 Uygulama başlatılıyor..."
               
-              # 3. Proje klasörüne gir
+              # 1. Portu temizle
+              fuser -k $PORT/tcp || true
+              sleep 2
+              
+              # 2. Ana dizine git ve güncelle
+              cd $BASE_DIR || { echo "❌ Ana dizin bulunamadı!"; exit 1; }
+              git pull origin master || git pull origin main
+              
+              # 3. Proje dizinine gir
               cd $WEB_PROJECT_DIR || { echo "❌ Proje dizini bulunamadı!"; exit 1; }
               
-              # 4. Portu belirterek arka planda başlat
+              # 4. Arka planda başlat ve çıktıyı dosyaya yaz
               setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
-              sleep 5
-              echo "✅ Uygulama $PORT portu üzerinden yayına alındı."
+              # 5. LOGLARI GITHUB EKRANINA BASMAK İÇİN BEKLEME
+              echo "⏳ Uygulamanın ayağa kalkması bekleniyor (10 sn)..."
+              sleep 10
+              
+              echo -e "\n--- [ UYGULAMA ÇIKTISI / LOGLAR ] ---"
+              if [ -f "output.log" ]; then
+                cat output.log
+              else
+                echo "⚠️ Log dosyası henüz oluşturulamadı."
+              fi
+              echo -e "-------------------------------------\n"
+              
+              echo "✅ İşlem tamamlandı. Port: $PORT"
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
-              echo "🛑 Port serbest bırakılıyor (Uygulama durduruluyor)..."
-              
-              # Portu kullanan süreci öldür, böylece uygulama kapanır
+              echo "🛑 Port serbest bırakılıyor..."
               fuser -k $PORT/tcp || true
-              
               echo "✅ $PORT portu kapatıldı, uygulama durduruldu."
             fi
