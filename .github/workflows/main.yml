@@ -25,8 +25,7 @@ jobs:
             if [ "${{ github.event.action }}" == "publish_event" ]; then
               echo "🚀 Uygulama güncelleniyor ve başlatılıyor..."
               
-              # 1. Eski süreci öldür
-              pkill -f $PROJECT_NAME || true
+              # 1. Eski süreci öldü
               
               # 2. Ana klasöre git ve kodu çek
               cd $BASE_DIR || { echo "Dizin bulunamadı!"; exit 1; }
