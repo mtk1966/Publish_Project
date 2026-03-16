@@ -17,7 +17,7 @@ jobs:
           script: |
             # --- FOTOĞRAFLARA GÖRE AYARLANMIŞ YOLLAR ---
             BASE_DIR="home/Publish_Project" # SunucudPublish_Projectaki ana repo klasörü
-            WEB_PROJECT_DIR="$BASE_DIR/ItemStrore.Web" # .csproj dosyasının olduğu yer
+            WEB_PROJECT_DIR="ItemStrore.Web" # .csproj dosyasının olduğu yer
             PROJECT_NAME="ItemStrore.Web" # Pkill için kullanılacak isim
             PORT="5000"
             # -----------------------------------------
