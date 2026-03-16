@@ -24,7 +24,7 @@ jobs:
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
               echo "🚀 Uygulama güncelleniyor ve başlatılıyor..."
-              
+              ls
               # 1. Eski süreci öldü
               
               # 2. Ana klasöre git ve kodu çek
