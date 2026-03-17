@@ -32,7 +32,7 @@ jobs:
               setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
               
               echo "⏳ Loglar toplanıyor (60 sn)..."
-              sleep 60
+              sleep 15
               
               echo "--- START_LOGS ---"
               if [ -f "output.log" ]; then
