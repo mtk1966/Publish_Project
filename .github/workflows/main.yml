@@ -54,5 +54,5 @@ jobs:
             **İşlem:** ${{ github.event.action }}
             **Durum:** ${{ job.status }}
             **Repo:** ${{ github.repository }}
-            **Loglar:** [GitHub Actions Log Paneli](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            **Loglar:** cat output.log
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
