@@ -9,50 +9,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SSH ile Port Yönetimi ve Log İzleme
+        id: ssh_step
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # --- AYARLAR (Tam Yollar) ---
+            # --- AYARLAR ---
             BASE_DIR="home/Publish_Project" 
             WEB_PROJECT_DIR="ItemStrore.Web"
             PORT="4642"
-            # ----------------------------
+            # ---------------
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
-              echo "🚀 Uygulama başlatılıyor..."
+              fuser -k $PORT/tcp || true
+              sleep 2
               cd $BASE_DIR || { echo "❌ Ana dizin bulunamadı!"; exit 1; }
               git pull origin master || git pull origin main
               cd $WEB_PROJECT_DIR || { echo "❌ Proje dizini bulunamadı!"; exit 1; }
+              
               setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
-              echo "⏳ Uygulamanın ayağa kalkması bekleniyor (60 sn)..."
-              sleep 20
-              echo -e "\n--- [ UYGULAMA ÇIKTISI / LOGLAR ] ---"
+              
+              echo "⏳ Loglar toplanıyor (60 sn)..."
+              sleep 60
+              
+              echo "--- START_LOGS ---"
               if [ -f "output.log" ]; then
-                cat output.log
+                tail -n 30 output.log # Son 30 satırı gönderir (Karakter sınırı için)
               else
-                echo "⚠️ Log dosyası henüz oluşturulamadı."
+                echo "⚠️ Log dosyası bulunamadı."
               fi
-              echo -e "-------------------------------------\n"
-              echo "✅ İşlem tamamlandı. Port: $PORT"
+              echo "--- END_LOGS ---"
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
-              echo "🛑 Port serbest bırakılıyor..."
               fuser -k $PORT/tcp || true
-              echo "✅ $PORT portu kapatıldı, uygulama durduruldu."
+              echo "✅ $PORT portu kapatıldı."
             fi
 
-      # Discord Bildirim Adımı
-      - name: Discord Notification
-        if: always() # İşlem hata alsa bile bildirimi gönderir
-        uses: rjstone/discord-webhook-notify@v1
+      - name: Discord'a Log Gönder
+        if: always()
+        uses: sarisia/actions-status-discord@v1
         with:
-          severity: ${{ job.status == 'success' && 'info' || 'error' }}
-          details: |
-            **İşlem:** ${{ github.event.action }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Dağıtım Raporu: ${{ github.event.action }}"
+          description: |
             **Durum:** ${{ job.status }}
-            **Repo:** ${{ github.repository }}
-            **Loglar:** cat output.log
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            **Proje:** ItemStore.Web
+            **Sunucu Logları (Son 30 Satır):**
+            ```text
+            ${{ steps.ssh_step.outputs.stdout }}
+            ```
