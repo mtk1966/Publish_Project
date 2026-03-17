@@ -23,25 +23,14 @@ jobs:
 
             if [ "${{ github.event.action }}" == "publish_event" ]; then
               echo "🚀 Uygulama başlatılıyor..."
-              
-              # 1. Portu temizle
               fuser -k $PORT/tcp || true
               sleep 2
-              
-              # 2. Ana dizine git ve güncelle
               cd $BASE_DIR || { echo "❌ Ana dizin bulunamadı!"; exit 1; }
               git pull origin master || git pull origin main
-              
-              # 3. Proje dizinine gir
               cd $WEB_PROJECT_DIR || { echo "❌ Proje dizini bulunamadı!"; exit 1; }
-              
-              # 4. Arka planda başlat ve çıktıyı dosyaya yaz
               setsid nohup dotnet run --urls "http://0.0.0.0:$PORT" > output.log 2>&1 &
-              
-              # 5. LOGLARI GITHUB EKRANINA BASMAK İÇİN BEKLEME
               echo "⏳ Uygulamanın ayağa kalkması bekleniyor (60 sn)..."
               sleep 60
-              
               echo -e "\n--- [ UYGULAMA ÇIKTISI / LOGLAR ] ---"
               if [ -f "output.log" ]; then
                 cat output.log
@@ -49,7 +38,6 @@ jobs:
                 echo "⚠️ Log dosyası henüz oluşturulamadı."
               fi
               echo -e "-------------------------------------\n"
-              
               echo "✅ İşlem tamamlandı. Port: $PORT"
 
             elif [ "${{ github.event.action }}" == "unpublish_event" ]; then
@@ -57,3 +45,16 @@ jobs:
               fuser -k $PORT/tcp || true
               echo "✅ $PORT portu kapatıldı, uygulama durduruldu."
             fi
+
+      # Discord Bildirim Adımı
+      - name: Discord Notification
+        if: always() # İşlem hata alsa bile bildirimi gönderir
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: ${{ job.status == 'success' && 'info' || 'error' }}
+          details: |
+            **İşlem:** ${{ github.event.action }}
+            **Durum:** ${{ job.status }}
+            **Repo:** ${{ github.repository }}
+            **Loglar:** [GitHub Actions Log Paneli](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
